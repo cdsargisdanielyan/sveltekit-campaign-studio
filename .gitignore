@@ -1,0 +1,13 @@
+node_modules/
+.svelte-kit/
+.vercel/
+.env
+.env.*
+!.env.example
+build/
+coverage/
+test-results/
+playwright-report/
+.lighthouseci/
+.npm-cache/
+*.log

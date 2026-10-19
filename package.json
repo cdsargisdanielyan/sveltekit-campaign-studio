@@ -1,0 +1,66 @@
+{
+  "name": "sveltekit-campaign-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
+  "engines": {
+    "node": ">=22.17"
+  },
+  "scripts": {
+    "dev": "vite dev --host 127.0.0.1",
+    "build": "vite build && node scripts/package-edge.js",
+    "preview": "vite preview --host 127.0.0.1",
+    "prepare": "svelte-kit sync && husky",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json && tsc --noEmit -p jsconfig.json",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:perf": "lhci autorun",
+    "test:size": "node scripts/check-bundles.js"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@sveltejs/kit": "^3.1.0",
+    "@vercel/og": "^0.8.5",
+    "svelte": "^5.57.1",
+    "web-vitals": "^5.1.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@eslint/js": "^9.39.0",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.56.0",
+    "@sveltejs/adapter-vercel": "^7.0.1",
+    "@sveltejs/adapter-node": "^6.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@testing-library/svelte": "^5.2.8",
+    "@types/node": "^24.0.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.39.0",
+    "eslint-plugin-svelte": "^3.13.0",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "jsdom": "^27.0.0",
+    "lint-staged": "^16.2.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "prettier-plugin-svelte": "^3.4.0",
+    "svelte-check": "^4.3.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^6.0.0",
+    "vite": "^8.3.4",
+    "vitest": "^4.0.0"
+  },
+  "lint-staged": {
+    "*.{js,svelte}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": "prettier --write"
+  }
+}

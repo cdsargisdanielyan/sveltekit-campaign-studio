@@ -1,0 +1,9 @@
+package-lock.json
+node_modules
+.svelte-kit
+.vercel
+test-results
+playwright-report
+.lighthouseci
+src/lib/server/fixtures
+src/lib/i18n/*.json
