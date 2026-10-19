@@ -1,8 +1,6 @@
-<script>
-  /** @type {{message:string,error?:boolean}} */ let {
-    message,
-    error = false,
-  } = $props();
+<script lang="ts">
+  let { message, error = false }: { message: string; error?: boolean } =
+    $props();
 </script>
 
 {#if message}<div

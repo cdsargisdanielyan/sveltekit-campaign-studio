@@ -156,6 +156,43 @@
   font-size: 1.1rem;
   color: var(--muted);
 }
+.article-body h2 {
+  margin-top: 2.5rem;
+  font-size: 1.65rem;
+  font-weight: 650;
+  color: var(--ink);
+}
+.article-body h3 {
+  margin-top: 2rem;
+  font-size: 1.3rem;
+  font-weight: 650;
+  color: var(--ink);
+}
+.article-body ul,
+.article-body ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+  line-height: 1.85;
+  color: var(--muted);
+  list-style: revert;
+}
+.article-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.article-body pre {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-control);
+  overflow: auto;
+  background: var(--soft);
+}
+.article-body blockquote {
+  margin-top: 1.5rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

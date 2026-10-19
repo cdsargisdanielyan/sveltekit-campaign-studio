@@ -1,12 +1,11 @@
-<script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+  import type { LayoutData } from './$types';
   import { page } from '$app/state';
   import { building } from '$app/env';
-  import { t, localized as l } from '#lib/i18n/index.js';
+  import { t, localized as l } from '#lib/i18n/index.ts';
   import Container from '#lib/components/Container.svelte';
-  /** @type {{data:import('./$types').LayoutData,children:import('svelte').Snippet}} */ let {
-    data,
-    children,
-  } = $props();
+  let { data, children }: { data: LayoutData; children: Snippet } = $props();
   $effect(() => {
     document.documentElement.lang = data.locale;
   });

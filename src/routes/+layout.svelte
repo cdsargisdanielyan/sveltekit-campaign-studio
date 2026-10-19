@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
   import '../app.css';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
-  import { report } from '#lib/telemetry.js';
-  /** @type {{children:import('svelte').Snippet}} */ let { children } =
-    $props();
+  import { report } from '#lib/telemetry.ts';
+  let { children }: { children: Snippet } = $props();
   onMount(async () => {
     if (Math.random() > 0.2) return;
     const { onCLS, onINP, onLCP, onTTFB } = await import('web-vitals');

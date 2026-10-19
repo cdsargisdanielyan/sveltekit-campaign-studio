@@ -1,8 +1,19 @@
-<script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
-  /** @type {{open?:boolean,title:string,description:string,children:import('svelte').Snippet}} */
-  let { open = $bindable(false), title, description, children } = $props();
-  /** @type {HTMLDivElement | undefined} */ let panel = $state();
+
+  let {
+    open = $bindable(false),
+    title,
+    description,
+    children,
+  }: {
+    open?: boolean;
+    title: string;
+    description: string;
+    children: Snippet;
+  } = $props();
+  let panel: HTMLDivElement | undefined = $state();
   const uid = $props.id();
   $effect(() => {
     if (!open) return;
@@ -15,8 +26,8 @@
       if (previous instanceof HTMLElement) previous.focus();
     };
   });
-  /** @param {KeyboardEvent} event */
-  function onkeydown(event) {
+
+  function onkeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       event.preventDefault();
       open = false;

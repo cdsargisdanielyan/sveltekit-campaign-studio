@@ -1,11 +1,26 @@
-<script>
+<script lang="ts">
+  import type { Locale } from '#lib/contracts.ts';
   import { page } from '$app/state';
   import * as env from '$app/env/public';
-  /** @type {{title:string,description:string,locale?:'en'|'de',image?:string,noindex?:boolean}} */
-  let { title, description, locale = 'en', image, noindex = false } = $props();
+
+  let {
+    title,
+    description,
+    locale = 'en',
+    image,
+    noindex = false,
+    canonicalQuery = '',
+  }: {
+    title: string;
+    description: string;
+    locale?: Locale;
+    image?: string;
+    noindex?: boolean;
+    canonicalQuery?: string;
+  } = $props();
   const origin = env.PUBLIC_SITE_URL || 'http://localhost:4173';
   let path = $derived(page.url.pathname);
-  let canonical = $derived(`${origin}${path}`);
+  let canonical = $derived(`${origin}${path}${canonicalQuery}`);
   let og = $derived(image || `${origin}/og/default.svg`);
 </script>
 
@@ -36,15 +51,15 @@
     <link
       rel="alternate"
       hreflang="en"
-      href={`${origin}${path.replace(/^\/(en|de)/, '/en')}`}
+      href={`${origin}${path.replace(/^\/(en|de)/, '/en')}${canonicalQuery}`}
     /><link
       rel="alternate"
       hreflang="de"
-      href={`${origin}${path.replace(/^\/(en|de)/, '/de')}`}
+      href={`${origin}${path.replace(/^\/(en|de)/, '/de')}${canonicalQuery}`}
     /><link
       rel="alternate"
       hreflang="x-default"
-      href={`${origin}${path.replace(/^\/(en|de)/, '/en')}`}
+      href={`${origin}${path.replace(/^\/(en|de)/, '/en')}${canonicalQuery}`}
     />
   {/if}
 </svelte:head>

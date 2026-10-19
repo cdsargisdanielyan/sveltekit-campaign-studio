@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
+  import type { PageData } from './$types';
   import * as env from '$app/env/public';
   import Seo from '#lib/components/Seo.svelte';
-  import { date, t, localized as l } from '#lib/i18n/index.js';
-  /** @type {{data:import('./$types').PageData}} */ let { data } = $props();
+  import { date, t, localized as l } from '#lib/i18n/index.ts';
+  let { data }: { data: PageData } = $props();
   let post = $derived(data.post);
   let text = $derived(post.translations[data.locale]);
   let origin = env.PUBLIC_SITE_URL || 'http://localhost:4173';
@@ -79,9 +80,8 @@
       >
     </div>
     <div class="article-body">
-      {#each text.body.split('\n\n') as paragraph, i (i)}<p>
-          {paragraph}
-        </p>{/each}
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -- Article HTML is sanitized by renderArticle on the server. -->
+      {@html data.bodyHtml}
     </div>
     <aside class="card mt-12">
       <h2 class="text-xl font-semibold">

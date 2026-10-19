@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
+  import { tick } from 'svelte';
+  import type { PageData } from './$types';
   import { invalidate } from '$app/navigation';
-  import { t, money, localized as l, campaignLabel } from '#lib/i18n/index.js';
-  import { statusSchema, channelSchema } from '#lib/contracts.js';
+  import { t, money, localized as l, campaignLabel } from '#lib/i18n/index.ts';
+  import { statusSchema, channelSchema } from '#lib/contracts.ts';
   import Heading from '#lib/components/Heading.svelte';
   import Select from '#lib/components/Select.svelte';
   import Seo from '#lib/components/Seo.svelte';
@@ -11,9 +13,31 @@
   import Skeleton from '#lib/components/Skeleton.svelte';
   import CampaignTable from '#lib/components/CampaignTable.svelte';
   import Toast from '#lib/components/Toast.svelte';
-  /** @type {{data:import('./$types').PageData}} */ let { data } = $props();
+  let { data }: { data: PageData } = $props();
   let help = $state(false);
   let notice = $state({ message: '', error: false });
+  let focusTarget = $state<string | null>(null);
+  $effect(() => {
+    const target = focusTarget;
+    if (!target) return;
+    let active = true;
+    void data.rows.then(
+      async () => {
+        await tick();
+        if (active)
+          (
+            document.getElementById(`edit-${target}`) ||
+            document.getElementById('campaign-results')
+          )?.focus();
+      },
+      () => {
+        /* The await block renders stream failures. */
+      },
+    );
+    return () => {
+      active = false;
+    };
+  });
 </script>
 
 <Seo
@@ -24,7 +48,6 @@
     'Deine Kampagnen an einem Ort.',
   )}
   locale={data.locale}
-  noindex
 />
 <main id="main" class="p-gutter py-10">
   <div class="flex justify-between gap-5 items-start flex-wrap">
@@ -175,6 +198,7 @@
         query={data.query}
         demoFailures={data.demoFailures}
         onnotice={(message, error) => (notice = { message, error })}
+        onsettled={(id) => (focusTarget = id)}
       />{:else}<div class="error" role="alert">
         <h2 class="font-semibold">{t(data.locale, 'common.error')}</h2>
         <p class="my-3">

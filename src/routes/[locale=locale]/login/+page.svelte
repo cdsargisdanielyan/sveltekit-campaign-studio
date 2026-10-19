@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
+  import type { PageData, ActionData } from './$types';
   import { enhance } from '$app/forms';
-  import { loginSchema } from '#lib/contracts.js';
-  import { t, localized as l } from '#lib/i18n/index.js';
+  import { loginSchema } from '#lib/contracts.ts';
+  import { t, localized as l } from '#lib/i18n/index.ts';
   import Seo from '#lib/components/Seo.svelte';
   import Input from '#lib/components/Input.svelte';
   import Button from '#lib/components/Button.svelte';
-  /** @type {{data:import('./$types').PageData,form:import('./$types').ActionData}} */ let {
-    data,
-    form,
-  } = $props();
+  let { data, form }: { data: PageData; form: ActionData } = $props();
   let email = $state('');
   let password = $state('');
   let invalid = $state(false);

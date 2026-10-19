@@ -1,0 +1,26 @@
+{
+  "extends": "$app/tsconfig",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "types": ["$app/types", "node", "vite/client"],
+    "ignoreDeprecations": "6.0"
+  },
+  "include": [
+    "src",
+    "api",
+    "tests",
+    "scripts/**/*.ts",
+    "scripts/**/*.cts",
+    "*.config.ts"
+  ],
+  "exclude": ["src/service-worker"]
+}

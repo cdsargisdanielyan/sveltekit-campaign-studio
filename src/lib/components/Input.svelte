@@ -1,5 +1,6 @@
-<script>
-  /** @type {{id:string,label:string,name?:string,type?:string,value?:string,required?:boolean,autocomplete?:import('svelte/elements').HTMLInputAttributes['autocomplete'],placeholder?:string}} */
+<script lang="ts">
+  import type { HTMLInputAttributes } from 'svelte/elements';
+
   let {
     id,
     label,
@@ -9,6 +10,15 @@
     required = false,
     autocomplete,
     placeholder,
+  }: {
+    id: string;
+    label: string;
+    name?: string;
+    type?: string;
+    value?: string;
+    required?: boolean;
+    autocomplete?: HTMLInputAttributes['autocomplete'];
+    placeholder?: string;
   } = $props();
 </script>
 

@@ -1,12 +1,11 @@
-<script>
+<script lang="ts">
+  import type { PostSearchResult } from '../contracts.ts';
   import { page as route } from '$app/state';
-  import { date, t, localized as l } from '#lib/i18n/index.js';
-  import { queryLink } from '#lib/query.js';
+  import { date, t, localized as l } from '#lib/i18n/index.ts';
+  import { queryLink } from '#lib/query.ts';
   import Badge from './Badge.svelte';
-  /** @type {{result:ReturnType<typeof import('../server/blog.js').findPosts>,locale:'en'|'de'}} */ let {
-    result,
-    locale,
-  } = $props();
+  let { result, locale }: { result: PostSearchResult; locale: 'en' | 'de' } =
+    $props();
 </script>
 
 {#if !result.posts.length}<div class="card my-8">

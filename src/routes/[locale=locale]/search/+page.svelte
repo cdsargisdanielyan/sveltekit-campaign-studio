@@ -1,13 +1,15 @@
-<script>
+<script lang="ts">
+  import type { PageData } from './$types';
   import Container from '#lib/components/Container.svelte';
   import Heading from '#lib/components/Heading.svelte';
   import Seo from '#lib/components/Seo.svelte';
   import PostList from '#lib/components/PostList.svelte';
-  import { t, localized as l } from '#lib/i18n/index.js';
-  /** @type {{data:import('./$types').PageData}} */ let { data } = $props();
+  import { t, localized as l } from '#lib/i18n/index.ts';
+  let { data }: { data: PageData } = $props();
 </script>
 
 <Seo
+  canonicalQuery={data.canonicalQuery}
   title={t(data.locale, 'nav.search')}
   description={t(data.locale, 'search.placeholder')}
   locale={data.locale}

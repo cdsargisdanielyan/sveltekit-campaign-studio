@@ -1,8 +1,6 @@
-<script>
-  /** @type {{children:import('svelte').Snippet,eyebrow?:string}} */ let {
-    children,
-    eyebrow,
-  } = $props();
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+  let { children, eyebrow }: { children: Snippet; eyebrow?: string } = $props();
 </script>
 
 {#if eyebrow}<p class="eyebrow mb-3">{eyebrow}</p>{/if}

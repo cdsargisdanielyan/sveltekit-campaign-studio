@@ -1,5 +1,5 @@
-<script>
-  /** @type {{label:string}} */ let { label } = $props();
+<script lang="ts">
+  let { label }: { label: string } = $props();
 </script>
 
 <div aria-busy="true" aria-label={label} class="card">

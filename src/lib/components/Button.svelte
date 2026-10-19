@@ -1,5 +1,6 @@
-<script>
-  /** @type {{children:import('svelte').Snippet, href?:string, variant?:'primary'|'secondary'|'ghost', type?:'button'|'submit', disabled?:boolean, onclick?: (event:MouseEvent)=>void}} */
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
   let {
     children,
     href,
@@ -7,6 +8,13 @@
     type = 'button',
     disabled = false,
     onclick,
+  }: {
+    children: Snippet;
+    href?: string;
+    variant?: 'primary' | 'secondary' | 'ghost';
+    type?: 'button' | 'submit';
+    disabled?: boolean;
+    onclick?: (event: MouseEvent) => void;
   } = $props();
 </script>
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Dialog from './Dialog.svelte';
   let open = $state(false);
 </script>

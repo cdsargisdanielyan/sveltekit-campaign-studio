@@ -1,6 +1,17 @@
-<script>
-  /** @type {{id:string,label:string,name?:string,value?:string,options:{value:string,label:string}[]}} */
-  let { id, label, name = id, value = $bindable(''), options } = $props();
+<script lang="ts">
+  let {
+    id,
+    label,
+    name = id,
+    value = $bindable(''),
+    options,
+  }: {
+    id: string;
+    label: string;
+    name?: string;
+    value?: string;
+    options: { value: string; label: string }[];
+  } = $props();
 </script>
 
 <div>

@@ -55,4 +55,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: node scripts/verify-deployment.js
+      - run: node scripts/verify-deployment.ts

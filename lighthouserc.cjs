@@ -5,6 +5,7 @@ const sharedAssertions = {
   ],
   'categories:accessibility': ['error', { minScore: 0.95 }],
   'categories:best-practices': ['error', { minScore: 0.95 }],
+  'categories:seo': ['error', { minScore: 0.95 }],
   'largest-contentful-paint': [
     'error',
     { maxNumericValue: 2000, aggregationMethod: 'median-run' },
@@ -15,7 +16,7 @@ const sharedAssertions = {
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: 'npm run preview -- --port 4173',
+      startServerCommand: 'npm run preview -- --port 4173 --strictPort',
       startServerReadyPattern: 'Local',
       url: [
         'http://localhost:4173/en',
@@ -23,7 +24,7 @@ module.exports = {
         'http://localhost:4173/en/dashboard/items',
       ],
       numberOfRuns: 3,
-      puppeteerScript: './scripts/lighthouse-auth.cjs',
+      puppeteerScript: './scripts/lighthouse-auth.cts',
       puppeteerLaunchOptions: { headless: true, args: ['--no-sandbox'] },
       settings: {
         formFactor: 'mobile',
@@ -47,21 +48,7 @@ module.exports = {
         chromeFlags: '--no-sandbox',
       },
     },
-    assert: {
-      assertMatrix: [
-        {
-          matchingUrlPattern: '/dashboard/items',
-          assertions: sharedAssertions,
-        },
-        {
-          matchingUrlPattern: '/en(?:$|/blog/)',
-          assertions: {
-            ...sharedAssertions,
-            'categories:seo': ['error', { minScore: 0.95 }],
-          },
-        },
-      ],
-    },
+    assert: { assertions: sharedAssertions },
     upload: { target: 'filesystem', outputDir: '.lighthouseci/reports' },
   },
 };

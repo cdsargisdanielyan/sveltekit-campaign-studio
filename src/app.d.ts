@@ -1,8 +1,8 @@
-// Framework ambient declaration only; all implementation is JavaScript.
+// Request-local authenticated identity, shared by server hooks and generated route types.
 declare global {
   namespace App {
     interface Locals {
-      user: ReturnType<typeof import('./lib/server/auth.js').readSession>;
+      user: ReturnType<typeof import('./lib/server/auth.ts').readSession>;
     }
   }
 }

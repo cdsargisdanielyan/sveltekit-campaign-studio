@@ -1,17 +1,17 @@
-<script>
+<script lang="ts">
+  import type { PageData } from './$types';
   import Heading from '#lib/components/Heading.svelte';
   import Seo from '#lib/components/Seo.svelte';
   import Card from '#lib/components/Card.svelte';
   import Button from '#lib/components/Button.svelte';
-  import { money, localized as l, t } from '#lib/i18n/index.js';
-  /** @type {{data:import('./$types').PageData}} */ let { data } = $props();
+  import { money, localized as l, t } from '#lib/i18n/index.ts';
+  let { data }: { data: PageData } = $props();
 </script>
 
 <Seo
   title={t(data.locale, 'dashboard.title')}
   description="Workspace overview"
   locale={data.locale}
-  noindex
 />
 <main id="main" class="p-gutter py-10">
   <Heading eyebrow={l(data.locale, 'Your workspace', 'Dein Arbeitsbereich')}

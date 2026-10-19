@@ -1,11 +1,12 @@
-<script>
+<script lang="ts">
+  import type { PageData } from './$types';
   import * as env from '$app/env/public';
-  import { t, localized as l } from '#lib/i18n/index.js';
+  import { t, localized as l } from '#lib/i18n/index.ts';
   import Seo from '#lib/components/Seo.svelte';
   import Container from '#lib/components/Container.svelte';
   import Button from '#lib/components/Button.svelte';
   import Card from '#lib/components/Card.svelte';
-  /** @type {{data:import('./$types').PageData}} */ let { data } = $props();
+  let { data }: { data: PageData } = $props();
   const features = [
     [
       '01',
@@ -28,7 +29,7 @@
       'A focused workspace that spends less time loading and more time moving you forward.',
       'Ein fokussierter Arbeitsbereich mit weniger Wartezeit und mehr Fortschritt.',
     ],
-  ];
+  ] as const;
   const jsonld = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -94,7 +95,15 @@
               class="badge">Live workspace</span
             >
           </div>
-          <div class="preview-number">220<span> campaigns, one home</span></div>
+          <div class="preview-number">
+            {data.campaignCount}<span
+              >{l(
+                data.locale,
+                ' campaigns, one home',
+                ' Kampagnen, ein Ort',
+              )}</span
+            >
+          </div>
           <div class="bars">
             {#each [35, 52, 43, 70, 56, 81, 67, 90, 76, 100, 83, 95] as height, i (i)}<div
                 style:height={`${height}%`}

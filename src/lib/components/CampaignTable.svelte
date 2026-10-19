@@ -1,25 +1,61 @@
-<script>
+<script lang="ts">
+  import { tick } from 'svelte';
+  import type {
+    CampaignPage,
+    Campaign,
+    Locale,
+    PublicUser,
+  } from '../contracts.ts';
+  import type { ItemQuery } from '../query.ts';
   import { SvelteSet } from 'svelte/reactivity';
   import { page } from '$app/state';
   import { invalidate } from '$app/navigation';
-  import { editSchema, itemSchema } from '#lib/contracts.js';
-  import { queryLink } from '#lib/query.js';
+  import { editSchema, campaignEditResponseSchema } from '#lib/contracts.ts';
+  import { queryLink } from '#lib/query.ts';
   import {
     t,
     date,
     money,
     localized as l,
     campaignLabel,
-  } from '#lib/i18n/index.js';
+  } from '#lib/i18n/index.ts';
   import Badge from './Badge.svelte';
-  /** @type {{result:Awaited<ReturnType<typeof import('../server/campaigns.js').listItems>>,locale:'en'|'de',role:'admin'|'editor'|'viewer',query:ReturnType<typeof import('../query.js').readItemQuery>,demoFailures:boolean,onnotice:(message:string,error:boolean)=>void}} */
-  let { result, locale, role, query, demoFailures, onnotice } = $props();
-  /** @type {Record<string,{name:string,updatedAt:string}>} */ let edits =
-    $state({});
-  /** @type {string|null} */ let editing = $state(null);
+
+  let {
+    result,
+    locale,
+    role,
+    query,
+    demoFailures,
+    onnotice,
+    onsettled,
+  }: {
+    result: CampaignPage;
+    locale: Locale;
+    role: PublicUser['role'];
+    query: ItemQuery;
+    demoFailures: boolean;
+    onnotice: (message: string, error: boolean) => void;
+    onsettled: (id: string) => void;
+  } = $props();
+  let edits: Record<string, Pick<Campaign, 'name' | 'updatedAt'>> = $state({});
+  let editing: string | null = $state(null);
   let draft = $state('');
   const pending = new SvelteSet();
   let simulate = $state(false);
+  function focusEditor(node: HTMLInputElement) {
+    void tick().then(() => {
+      if (node.isConnected) {
+        node.focus();
+        node.select();
+      }
+    });
+  }
+  async function closeEditor(id: string) {
+    editing = null;
+    await tick();
+    document.getElementById(`edit-${id}`)?.focus();
+  }
   const columns = [
     ['name', 'dashboard.items.column.name'],
     ['status', 'dashboard.items.column.status'],
@@ -29,8 +65,8 @@
     ['spent', 'dashboard.items.column.spent'],
     ['ctr', 'dashboard.items.column.ctr'],
     ['updatedAt', 'dashboard.items.column.updated'],
-  ];
-  /** @param {string} key */ function sortLink(key) {
+  ] as const;
+  function sortLink(key: ItemQuery['sort']) {
     return queryLink(page.url, {
       sort: key,
       direction:
@@ -38,8 +74,8 @@
       page: null,
     });
   }
-  /** @param {typeof result.items[number]} item */
-  async function save(item) {
+
+  async function save(item: Campaign) {
     const previous = edits[item.id];
     const original = previous || item;
     const input = editSchema.safeParse({
@@ -72,7 +108,7 @@
         body: JSON.stringify(input.data),
       });
       if (!response.ok) {
-        const messages = /** @type {Record<number,string>} */ ({
+        const messages: Partial<Record<number, string>> = {
           401: l(
             locale,
             'Your session expired. Sign in again.',
@@ -93,7 +129,7 @@
             'The campaign name was rejected. Check its length.',
             'Der Name wurde abgelehnt. Bitte Länge prüfen.',
           ),
-        });
+        };
         throw new Error(
           messages[response.status] ||
             l(
@@ -103,26 +139,33 @@
             ),
         );
       }
-      const payload = await response.json();
-      const saved = itemSchema.parse(payload.item);
+      const payload: unknown = await response.json();
+      const { item: saved } = campaignEditResponseSchema.parse(payload);
       edits[item.id] = { name: saved.name, updatedAt: saved.updatedAt };
       onnotice(l(locale, 'Campaign updated.', 'Kampagne aktualisiert.'), false);
     } catch (error) {
       if (previous) edits[item.id] = previous;
       else delete edits[item.id];
       const message =
-        error instanceof Error
-          ? error.message
-          : l(
+        error instanceof TypeError
+          ? l(
               locale,
-              'Network error. Original value restored.',
-              'Netzwerkfehler. Ursprünglicher Wert wiederhergestellt.',
-            );
+              'Connection lost. We could not confirm the save; check your connection and try again.',
+              'Verbindung verloren. Speichern konnte nicht bestätigt werden. Verbindung prüfen und erneut versuchen.',
+            )
+          : error instanceof Error
+            ? error.message
+            : l(
+                locale,
+                'Network error. Original value restored.',
+                'Netzwerkfehler. Ursprünglicher Wert wiederhergestellt.',
+              );
       onnotice(message, true);
     } finally {
       pending.delete(item.id);
       simulate = false;
       await invalidate('campaigns:list');
+      onsettled(item.id);
     }
   }
 </script>
@@ -158,6 +201,7 @@
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard users need to scroll the wide table.) -->
   <div
     class="table-frame"
+    id="campaign-results"
     role="region"
     aria-label={t(locale, 'dashboard.items.title')}
     tabindex="0"
@@ -179,10 +223,7 @@
                   : 'descending'
                 : undefined}
               ><a href={sortLink(key)}
-                >{t(
-                  locale,
-                  /** @type {keyof typeof import('../i18n/en.json')} */ (label),
-                )}
+                >{t(locale, label)}
                 <span aria-hidden="true"
                   >{query.sort === key
                     ? query.direction === 'asc'
@@ -207,6 +248,13 @@
                   >
                     <input
                       class="field min-w-48"
+                      use:focusEditor
+                      onkeydown={(event) => {
+                        if (event.key === 'Escape') {
+                          event.preventDefault();
+                          closeEditor(item.id);
+                        }
+                      }}
                       aria-label={l(locale, 'Campaign name', 'Kampagnenname')}
                       bind:value={draft}
                       minlength="3"
@@ -217,13 +265,14 @@
                     ><button
                       class="small-button"
                       type="button"
-                      onclick={() => (editing = null)}
+                      onclick={() => closeEditor(item.id)}
                       >{t(locale, 'common.cancel')}</button
                     >
                   </form>{:else}<span data-testid="campaign-name"
                     >{edits[item.id]?.name || item.name}</span
                   >{#if role !== 'viewer'}<button
                       class="edit-button"
+                      id={`edit-${item.id}`}
                       disabled={pending.size > 0}
                       aria-label={`${l(locale, 'Edit', 'Bearbeiten')} ${edits[item.id]?.name || item.name}`}
                       onclick={() => {
