@@ -4,17 +4,20 @@
   import { invalidate } from '$app/navigation';
   import { editSchema, itemSchema } from '#lib/contracts.js';
   import { queryLink } from '#lib/query.js';
-  import { t, date, money, localized as l } from '#lib/i18n/index.js';
+  import {
+    t,
+    date,
+    money,
+    localized as l,
+    campaignLabel,
+  } from '#lib/i18n/index.js';
   import Badge from './Badge.svelte';
-  import Toast from './Toast.svelte';
-  /** @type {{result:Awaited<ReturnType<typeof import('../server/campaigns.js').listItems>>,locale:'en'|'de',role:'admin'|'editor'|'viewer',query:ReturnType<typeof import('../query.js').readItemQuery>,demoFailures:boolean}} */
-  let { result, locale, role, query, demoFailures } = $props();
+  /** @type {{result:Awaited<ReturnType<typeof import('../server/campaigns.js').listItems>>,locale:'en'|'de',role:'admin'|'editor'|'viewer',query:ReturnType<typeof import('../query.js').readItemQuery>,demoFailures:boolean,onnotice:(message:string,error:boolean)=>void}} */
+  let { result, locale, role, query, demoFailures, onnotice } = $props();
   /** @type {Record<string,{name:string,updatedAt:string}>} */ let edits =
     $state({});
   /** @type {string|null} */ let editing = $state(null);
   let draft = $state('');
-  let message = $state('');
-  let failure = $state(false);
   const pending = new SvelteSet();
   let simulate = $state(false);
   const columns = [
@@ -45,19 +48,20 @@
       updatedAt: original.updatedAt,
     });
     if (!input.success) {
-      message = l(
-        locale,
-        'Use a name between 3 and 100 characters.',
-        'Name muss 3 bis 100 Zeichen enthalten.',
+      onnotice(
+        l(
+          locale,
+          'Use a name between 3 and 100 characters.',
+          'Name muss 3 bis 100 Zeichen enthalten.',
+        ),
+        true,
       );
-      failure = true;
       return;
     }
     edits[item.id] = { name: input.data.name, updatedAt: original.updatedAt };
     editing = null;
     pending.add(item.id);
-    failure = false;
-    message = l(locale, 'Saving change…', 'Änderung wird gespeichert…');
+    onnotice(l(locale, 'Saving change…', 'Änderung wird gespeichert…'), false);
     try {
       const response = await fetch('/api/items', {
         method: 'PATCH',
@@ -102,12 +106,11 @@
       const payload = await response.json();
       const saved = itemSchema.parse(payload.item);
       edits[item.id] = { name: saved.name, updatedAt: saved.updatedAt };
-      message = l(locale, 'Campaign updated.', 'Kampagne aktualisiert.');
+      onnotice(l(locale, 'Campaign updated.', 'Kampagne aktualisiert.'), false);
     } catch (error) {
       if (previous) edits[item.id] = previous;
       else delete edits[item.id];
-      failure = true;
-      message =
+      const message =
         error instanceof Error
           ? error.message
           : l(
@@ -115,6 +118,7 @@
               'Network error. Original value restored.',
               'Netzwerkfehler. Ursprünglicher Wert wiederhergestellt.',
             );
+      onnotice(message, true);
     } finally {
       pending.delete(item.id);
       simulate = false;
@@ -220,7 +224,7 @@
                     >{edits[item.id]?.name || item.name}</span
                   >{#if role !== 'viewer'}<button
                       class="edit-button"
-                      disabled={pending.has(item.id)}
+                      disabled={pending.size > 0}
                       aria-label={`${l(locale, 'Edit', 'Bearbeiten')} ${edits[item.id]?.name || item.name}`}
                       onclick={() => {
                         editing = item.id;
@@ -232,8 +236,11 @@
                     >{/if}{/if}
               </div>
               <span class="text-xs muted font-normal">{item.id}</span></th
-            ><td><Badge status={item.status}>{item.status}</Badge></td><td
-              class="capitalize">{item.channel}</td
+            ><td
+              ><Badge status={item.status}
+                >{campaignLabel(locale, item.status)}</Badge
+              ></td
+            ><td class="capitalize">{campaignLabel(locale, item.channel)}</td
             ><td>{item.owner.name}</td><td>{money(locale, item.budget)}</td><td
               >{money(locale, item.spent)}</td
             ><td
@@ -270,7 +277,6 @@
       >{/if}
   </div>
 </nav>
-<Toast {message} error={failure} />
 
 <style>
   .table-frame {

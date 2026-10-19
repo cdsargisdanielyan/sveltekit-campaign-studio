@@ -1,6 +1,6 @@
 <script>
   import { invalidate } from '$app/navigation';
-  import { t, money, localized as l } from '#lib/i18n/index.js';
+  import { t, money, localized as l, campaignLabel } from '#lib/i18n/index.js';
   import { statusSchema, channelSchema } from '#lib/contracts.js';
   import Heading from '#lib/components/Heading.svelte';
   import Select from '#lib/components/Select.svelte';
@@ -10,8 +10,10 @@
   import Dialog from '#lib/components/Dialog.svelte';
   import Skeleton from '#lib/components/Skeleton.svelte';
   import CampaignTable from '#lib/components/CampaignTable.svelte';
+  import Toast from '#lib/components/Toast.svelte';
   /** @type {{data:import('./$types').PageData}} */ let { data } = $props();
   let help = $state(false);
+  let notice = $state({ message: '', error: false });
 </script>
 
 <Seo
@@ -145,7 +147,7 @@
                 name="status"
                 value={status}
                 checked={data.query.statuses.includes(status)}
-              />{status}</label
+              />{campaignLabel(data.locale, status)}</label
             >{/each}
         </div>
       </fieldset>
@@ -158,7 +160,7 @@
                 name="channel"
                 value={channel}
                 checked={data.query.channels.includes(channel)}
-              />{channel}</label
+              />{campaignLabel(data.locale, channel)}</label
             >{/each}
         </div>
       </fieldset>
@@ -172,6 +174,7 @@
         role={data.user.role}
         query={data.query}
         demoFailures={data.demoFailures}
+        onnotice={(message, error) => (notice = { message, error })}
       />{:else}<div class="error" role="alert">
         <h2 class="font-semibold">{t(data.locale, 'common.error')}</h2>
         <p class="my-3">
@@ -194,6 +197,7 @@
       )}
     </div>{/await}
 </main>
+<Toast message={notice.message} error={notice.error} />
 <Dialog
   bind:open={help}
   title={l(data.locale, 'Make yourself at home', 'Fühl dich wie zu Hause')}

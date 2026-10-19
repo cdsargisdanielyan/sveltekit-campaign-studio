@@ -71,7 +71,7 @@
     @apply mx-auto w-full max-w-[1280px] px-gutter;
   }
   .button {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-transparent bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition-colors;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-transparent bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink;
   }
   .button:hover {
     filter: brightness(0.95);

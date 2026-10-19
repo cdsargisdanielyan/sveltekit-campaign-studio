@@ -10,6 +10,24 @@ export function t(locale, key, values = {}) {
 }
 /** @param {Locale} locale @param {string} en @param {string} de */
 export const localized = (locale, en, de) => (locale === 'de' ? de : en);
+
+/** @param {Locale} locale @param {import('zod').infer<typeof import('../contracts.js').statusSchema> | import('zod').infer<typeof import('../contracts.js').channelSchema>} value */
+export function campaignLabel(locale, value) {
+  const labels = {
+    draft: ['Draft', 'Entwurf'],
+    scheduled: ['Scheduled', 'Geplant'],
+    active: ['Active', 'Aktiv'],
+    paused: ['Paused', 'Pausiert'],
+    completed: ['Completed', 'Abgeschlossen'],
+    archived: ['Archived', 'Archiviert'],
+    email: ['Email', 'E-Mail'],
+    sms: ['SMS', 'SMS'],
+    web: ['Web', 'Web'],
+    social: ['Social', 'Social Media'],
+    push: ['Push', 'Push'],
+  };
+  return labels[value][locale === 'de' ? 1 : 0];
+}
 /** @param {Locale} locale @param {string} value */
 export const date = (locale, value) =>
   new Intl.DateTimeFormat(locale, {

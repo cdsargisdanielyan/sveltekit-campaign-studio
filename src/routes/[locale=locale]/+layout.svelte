@@ -62,6 +62,7 @@
           )}>◐</button
         >
         {#if dashboard}<form method="POST" action="/logout">
+            <input type="hidden" name="locale" value={data.locale} />
             <button class="button secondary"
               >{t(data.locale, 'nav.logout')}</button
             >
@@ -75,7 +76,9 @@
 {#if dashboard}
   <div class="dashboard-shell">
     <aside class="sidebar">
-      <p class="eyebrow mb-6">Workspace</p>
+      <p class="eyebrow mb-6">
+        {l(data.locale, 'Workspace', 'Arbeitsbereich')}
+      </p>
       <nav
         aria-label={l(data.locale, 'Workspace navigation', 'Arbeitsbereich')}
       >

@@ -93,6 +93,14 @@ test('editor sees optimistic save, successful persistence, rollback and accessib
   await expect(
     page.getByRole('button', { name: 'Workspace guide' }),
   ).toBeFocused();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: 'Toggle color theme' }).click();
+  const darkResults = await new AxeBuilder({ page }).analyze();
+  expect(
+    darkResults.violations.filter((v) =>
+      ['serious', 'critical'].includes(v.impact || ''),
+    ),
+  ).toEqual([]);
   // Restore the supplied fixture value, keeping this test repeatable.
   await changedRow.getByRole('button', { name: /^Edit / }).click();
   await page
@@ -117,10 +125,25 @@ test('viewer is read-only and server rejects forged writes', async ({
     },
   });
   expect(response.status()).toBe(403);
+  await page.getByRole('link', { name: 'DE — Switch to German' }).click();
+  await page.getByRole('button', { name: 'Abmelden', exact: true }).click();
+  await expect(page).toHaveURL(/\/de\/login$/);
+  expect(
+    (await page.context().cookies()).some(
+      (cookie) => cookie.name === 'session',
+    ),
+  ).toBe(false);
+  const anonymous = await page.request.patch('/api/items', { data: {} });
+  expect(anonymous.status()).toBe(401);
 });
 test('public marketing visual baseline', async ({ page }) => {
   await page.goto('/en');
   await page.evaluate(() => (document.documentElement.dataset.theme = 'light'));
+  // Isolate chart geometry from surrounding system-font metrics and rotated bounds.
+  await page.addStyleTag({
+    content:
+      '.preview-window { transform: none !important; } .bars { width: 360px; }',
+  });
   await expect(page.locator('.bars')).toHaveScreenshot('campaign-bars.png', {
     maxDiffPixelRatio: 0.01,
     animations: 'disabled',

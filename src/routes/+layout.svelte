@@ -1,6 +1,7 @@
 <script>
   import '../app.css';
   import { onMount } from 'svelte';
+  import { page } from '$app/state';
   import { report } from '#lib/telemetry.js';
   /** @type {{children:import('svelte').Snippet}} */ let { children } =
     $props();
@@ -14,7 +15,11 @@
   });
 </script>
 
-<a href="#main" class="skip-link">Skip to content</a>
+<a href="#main" class="skip-link"
+  >{page.url.pathname.startsWith('/de')
+    ? 'Zum Inhalt springen'
+    : 'Skip to content'}</a
+>
 <svelte:boundary
   onerror={(error) =>
     report({
