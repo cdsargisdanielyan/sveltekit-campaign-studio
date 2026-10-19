@@ -1,10 +1,8 @@
 import { ImageResponse } from '@vercel/og';
-import posts from '../src/lib/server/fixtures/posts.json' with { type: 'json' };
+import posts from './fixtures/posts.json' with { type: 'json' };
 import { z } from 'zod';
-import { postSchema } from '../src/lib/contracts.ts';
+import { postSchema } from '../contracts.ts';
 const validatedPosts = z.array(postSchema).parse(posts);
-
-export const config = { runtime: 'edge' };
 
 export default function handler(request: Request) {
   const url = new URL(request.url);

@@ -16,7 +16,6 @@
   },
   "include": [
     "src",
-    "api",
     "tests",
     "scripts/**/*.ts",
     "scripts/**/*.cts",

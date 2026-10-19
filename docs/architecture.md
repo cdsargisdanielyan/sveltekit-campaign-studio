@@ -20,6 +20,8 @@
 
 SvelteKit 3's Vercel adapter targets Node. The packaging step adds a separate Edge function before its catch-all route using Vercel's Build Output API. OG rasterization happens during build, keeping the edge handler independent of Node crypto, auth and campaign data modules. Node keeps the mock service near its process-local data and supports the authentication dependencies. CI inspects the emitted runtimes and PNG files; a live deployment is verified separately.
 
+Route source stays inside `src/`; there is no root `api/` directory. Vercel independently compiles root API files, which would duplicate the explicitly packaged OG function and bypass SvelteKit's bundling. The deployment verifier guards this boundary and executes the generated Edge handler against a localized PNG and an unknown slug.
+
 ## Data and contracts
 
 `contracts.ts` defines schemas and inferred types. `server/data.ts` parses the supplied posts, campaigns, users and taxonomy at import. The mock service does filtering, stable sorting and pagination before serializing a page. OR applies within each status/channel facet; AND applies across facets. Invalid enum/query values normalize, page bounds clamp and equal sort values use stable ID ordering.

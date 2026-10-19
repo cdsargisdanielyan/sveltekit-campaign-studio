@@ -7,7 +7,7 @@
     "#lib/*": "./src/lib/*"
   },
   "engines": {
-    "node": ">=24"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "vite dev --host 127.0.0.1",

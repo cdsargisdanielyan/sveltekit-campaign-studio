@@ -4,7 +4,7 @@ A SvelteKit take-home implementation: bilingual public pages and an authenticate
 
 ## Run
 
-Requires **Node 24+** and npm. Node's native TypeScript support runs the typed build and performance helpers; no separate script runner is needed.
+Requires **Node 24.x** and npm. Node's native TypeScript support runs the typed build and performance helpers; no separate script runner is needed.
 
 ```sh
 npm ci
