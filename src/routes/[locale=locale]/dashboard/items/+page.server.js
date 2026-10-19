@@ -11,6 +11,12 @@ export function load({ url, depends }) {
   const rows = (async () => {
     if (
       env.DEMO_FAILURES === 'true' &&
+      url.searchParams.get('demo') === 'slow'
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+    }
+    if (
+      env.DEMO_FAILURES === 'true' &&
       url.searchParams.get('demo') === 'load-error'
     )
       return {

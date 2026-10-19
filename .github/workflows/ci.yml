@@ -1,0 +1,57 @@
+name: Quality gates
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PUBLIC_SITE_URL: http://localhost:4173
+      SESSION_SECRET: ci-only-session-secret-not-used-in-production
+      DEMO_FAILURES: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Select installed Chromium for Lighthouse
+        run: |
+          node --input-type=module -e "import {chromium} from '@playwright/test'; console.log('CHROME_PATH=' + chromium.executablePath())" >> "$GITHUB_ENV"
+      - run: npm run test:perf
+      - run: npm run test:size
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-reports
+          path: |
+            playwright-report/
+            test-results/
+            .lighthouseci/
+  vercel-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL: '1'
+      SESSION_SECRET: ci-only-session-secret-not-used-in-production
+      PUBLIC_SITE_URL: https://campaign-studio.example.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/verify-deployment.js

@@ -5,7 +5,7 @@ import posts from '../src/lib/server/fixtures/posts.json' with { type: 'json' };
 // Vercel Build Output API: explicit Edge route alongside the adapter's Node functions.
 // Kit 3 removed the legacy per-route Edge adapter option.
 if (process.env.VERCEL) {
-  const root = '.vercel/output';
+  const root = process.env.EDGE_OUTPUT_DIR || '.vercel/output';
   for (const locale of ['en', 'de']) {
     await mkdir(`${root}/static/og/${locale}`, { recursive: true });
     for (const post of posts) {

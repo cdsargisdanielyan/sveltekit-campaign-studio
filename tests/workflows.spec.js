@@ -134,3 +134,49 @@ test('protected routes redirect and unavailable routes return 404', async ({
   const response = await page.goto('/404');
   expect(response?.status()).toBe(404);
 });
+
+test('rows stream after the shell and service failures preserve the summary', async ({
+  page,
+}) => {
+  await login(page, 'viewer');
+  const cookies = await page.context().cookies();
+  const response = await fetch(
+    'http://localhost:4173/en/dashboard/items?demo=slow',
+    {
+      headers: {
+        'Accept-Encoding': 'identity',
+        Cookie: cookies
+          .map((cookie) => `${cookie.name}=${cookie.value}`)
+          .join('; '),
+      },
+    },
+  );
+  const chunks = await (async () => {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    const parts = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      parts.push(decoder.decode(value));
+    }
+    return parts;
+  })();
+  const shell = chunks.findIndex((chunk) => chunk.includes('aria-busy="true"'));
+  const rows = chunks.findIndex((chunk) => chunk.includes('cmp_'));
+  expect(shell).toBeGreaterThanOrEqual(0);
+  expect(rows).toBeGreaterThan(shell);
+  await page.goto('/en/dashboard/items?demo=load-error');
+  await expect(page.getByRole('alert')).toContainText(
+    'Summary information is still available',
+  );
+  await expect(page.getByText('220', { exact: true })).toBeVisible();
+  const beacon = await page.request.post('/api/beacon', {
+    headers: {
+      Origin: 'http://localhost:4173',
+      'Content-Type': 'application/json',
+    },
+    data: '{invalid',
+  });
+  expect(beacon.status()).toBe(400);
+});

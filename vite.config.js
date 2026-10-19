@@ -9,7 +9,6 @@ export default defineConfig({
       adapter: process.env.VERCEL
         ? adapter({ runtime: 'nodejs24.x' })
         : nodeAdapter(),
-      paths: { origin: process.env.PUBLIC_SITE_URL || 'http://localhost:4173' },
     }),
   ],
 });

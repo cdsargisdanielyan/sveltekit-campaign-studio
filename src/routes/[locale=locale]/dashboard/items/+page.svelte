@@ -3,6 +3,7 @@
   import { t, money, localized as l } from '#lib/i18n/index.js';
   import { statusSchema, channelSchema } from '#lib/contracts.js';
   import Heading from '#lib/components/Heading.svelte';
+  import Select from '#lib/components/Select.svelte';
   import Seo from '#lib/components/Seo.svelte';
   import Card from '#lib/components/Card.svelte';
   import Badge from '#lib/components/Badge.svelte';
@@ -109,17 +110,21 @@
           )}
         />
       </div>
-      <div>
-        <label class="label" for="owner"
-          >{t(data.locale, 'dashboard.items.column.owner')}</label
-        ><select class="field" id="owner" name="owner" value={data.query.owner}
-          ><option value=""
-            >{l(data.locale, 'All owners', 'Alle Verantwortlichen')}</option
-          >{#each data.owners as owner (owner.id)}<option value={owner.id}
-              >{owner.name}</option
-            >{/each}</select
-        >
-      </div>
+      <Select
+        id="owner"
+        label={t(data.locale, 'dashboard.items.column.owner')}
+        value={data.query.owner}
+        options={[
+          {
+            value: '',
+            label: l(data.locale, 'All owners', 'Alle Verantwortlichen'),
+          },
+          ...data.owners.map((owner) => ({
+            value: owner.id,
+            label: owner.name,
+          })),
+        ]}
+      />
       <input type="hidden" name="sort" value={data.query.sort} /><input
         type="hidden"
         name="direction"
