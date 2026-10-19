@@ -106,6 +106,7 @@ The route-size script walks the production manifest's static dependencies and co
 
 - The provided JSON is a mock backend. Campaign changes persist within one Node process and reset on restart; serverless instances do not share them. A real launch needs a database adapter with atomic version checks. This assessment does not pretend that process memory is durable storage.
 - Demo users intentionally use the supplied plaintext fixture passwords, verified only on the server. Signed HttpOnly, SameSite cookies expire after eight hours; logout clears the browser cookie but there is no central token revocation service.
+- The production dependency audit reports no known vulnerabilities. The full audit reports advisories in development-only Tailwind 3 and Lighthouse tooling; automatic fixes propose incompatible major changes (and an obsolete Lighthouse CI downgrade). They have not been force-applied. Run `npm audit` when maintaining the toolchain; its dependencies are not shipped in the production client.
 - The marketing logos are illustrative demo names, not customer endorsements. Pricing describes this free demo; there is no checkout or unrequested campaign-creation workflow.
 - Live deployment and a green remote CI run must be verified before submission. Local verification alone does not establish either.
 - Keep an honest record of human review and deployment time when submitting. No time estimate is fabricated by the implementation.

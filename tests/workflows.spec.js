@@ -142,7 +142,7 @@ test('public marketing visual baseline', async ({ page }) => {
   // Isolate chart geometry from surrounding system-font metrics and rotated bounds.
   await page.addStyleTag({
     content:
-      '.preview-window { transform: none !important; } .bars { width: 360px; }',
+      '.preview-window { transform: none !important; } .bars { position: fixed; top: 0; left: 0; width: 360px; margin: 0; z-index: 100; background: var(--surface); }',
   });
   await expect(page.locator('.bars')).toHaveScreenshot('campaign-bars.png', {
     maxDiffPixelRatio: 0.01,
